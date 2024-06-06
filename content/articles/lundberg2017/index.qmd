@@ -1,0 +1,82 @@
+---
+title: Lundberg and Lee, 2017.
+date: 2024-06-03
+author: Anton Öberg Sysojev
+categories:
+    - Prediction
+    - Feature importance
+subtitle: >
+    A unified approach to interpreting model predictions
+---
+
+::: {.callout-note}
+
+### At a glance
+
+Summary
+: Seminal paper originating SHAP values for feature importance, by reframing Shapley values into a more general context
+
+Related articles
+: Shapley (1951) [(PDF)[https://www.rand.org/content/dam/rand/pubs/research_memoranda/2008/RM670.pdf]], Štrumbelj and Kononenko (2014) [[Knowledge and Information Systems](https://link.springer.com/article/10.1007/s10115-013-0679-x)],  Aas, Jullum and Løland (2021) [(PubMed)[https://pubmed-ncbi-nlm-nih-gov.proxy.kib.ki.se/32982121/]], Lundberg, Nair and Vavilala et al. (2018) [[PubMed](https://pubmed-ncbi-nlm-nih-gov.proxy.kib.ki.se/31001455/)] and Lundberg, Erion and Chen et al. (2020), [PDF](https://www.nature.com/articles/s42256-019-0138-9.epdf?shared_access_token=RCYPTVkiECUmc0CccSMgXtRgN0jAjWel9jnR3ZoTv0O81kV8DqPb2VXSseRmof0Pl8YSOZy4FHz5vMc3xsxcX6uT10EzEoWo7B-nZQAHJJvBYhQJTT1LnJmpsa48nlgUWrMkThFrEIvZstjQ7Xdc5g%3D%3D). For more general texts on 'explainable AI', I recommend Christoph Molnar's book *Interpretable Machine Learning*, which is freely available via GitHub: (Interpretable Machine Learning)[https://christophm.github.io/interpretable-ml-book/], with the chapter on SHAP available here: (SHAP)[https://christophm.github.io/interpretable-ml-book/shap.html].
+
+Link
+: DOI: [10.5555/3295222.3295230](https://dl.acm.org/doi/pdf/10.5555/3295222.3295230)
+
+:::
+
+## Introduction
+- Lundberg and Lee set out to do three things: firstly, they define a class which unifies existing feature importance models under the umbrella of 'additiva feature attribution' methods.
+- Secondly, they prove that Shapley values provides a unique solution to the entire class, and suggest SHAP values as a unified measure of feature importance.
+- Third, they provide novel methods for the estimation of SHAP values.
+
+## Additive Feature Attribution methods
+- They define additive feature attribution methods as methods that have an underlying explanation model that can be forumlated as a linear function of binary variables.
+- Mathematically, this is given as $g(z') = \phi_0 + \sum_{i=1}^M \phi_i z_i'$, where $z' \in \{0, 1\}^M$ and $M$ is the number of features.
+- Here, the *explanation model* is any approximation of the original model (e.g., a prediction model).
+- They subsequently show that several previous established methods, including LIME, DeepLIFT, Layer-Wise Relevance Proportion and classic Shapley Values, all belong to this class.
+
+## Simple proporties uniquely determine additive feature attributions
+- Next, they show that additive feature attribution methods has a unique solution with three highly desireable properties.
+- Firstly, they possess 'local accuracy', meaning that the explanation model $g$ at least matches the original model $f$ at input $x$, for the simplified input $x'$.
+- More specifically, it holds that $f(x) = g(x') = \phi_0 + \sum_{i=1}^M \phi_i x_i'$.
+
+- Secondly, it has the 'missingness' property, meaning that if the simplified input $x'$ represents feature presence, then features that are not present will have no impact.
+- In other words, it holds that $x'_i = 0 \Rightarrow \phi_i = 0$.
+
+- Third, it meets the 'consistency' property, wherein if a model changes in such a way that some simplified input's contribution increases or stays the same, that input's attribution should not decrease.
+- Here, this means that $f'_x(z') - f'_x(z' \\\ i) \geq f_x(z') - f_x(z' \\\ i) \Rightarrow \phi_i(f', x) \geq \phi_i(f, x)$.
+
+- Finally, the authors unite all the additive feature attribution methods by showing that there is only one possible explanation model that belong to the class of additive feature attribution methods, while satisfying the three given proporties and that is the Shapley value $\phi_i$. 
+- In particular, these are given by $\phi_i(f, x) = \Sigma \frac{|z'|! (M - |z'| - 1)!}{M!} [f_x(z') - f_x(z'\\\i)]$.
+
+## SHAP
+- SHAP values are then obtained by using a conditional expectation function of the original model, as the explanation model, i.e. the solution when $f_x(z') = f(h_x(z')) = E[f(z) | z_s]$.
+- Nevertheless, computing these values is complicated and challenging, though by now there are options available for specific prediction models, with varying degrees of assumptions on them.
+
+### Model-agnostic approximations
+- One can estimate SHAP values immediately using a permutation approach to the original Shapley value equation (see [Štrumbelj and Kononenko (2014)](https://link.springer.com/article/10.1007/s10115-013-0679-x)).
+- However, this requires assumptions of feature independence, and is only really tractable for a small set of features.
+- This is also referred to as the 'exact permutation'.
+
+- The authors additionally propose 'Kernel SHAP' as a novel approach for SHAP-value estimation, which has become greatly popular since.
+- While not necessarily fast, it allows for SHAP-value estimation in a highly general context (by being model agnostic) while setting no boundary on the size of the data (outside of computational complexity).
+- Notably, it also assumes feature independence, though recently developed methods have attempted to circumvent this (see [(Aas, Jullum and Løland (2021))[https://pubmed-ncbi-nlm-nih-gov.proxy.kib.ki.se/32982121/]]).
+- It is implemented in several different languages, primarily for Python through the authors of this paper (https://github.com/shap/shap) but also in multiple different R packages, of which `kernelshap` is one of the more popular (https://github.com/ModelOriented/kernelshap).
+- AÖS: I found that the available packages implementing SHAP in R was quite limited, and would have preferred to use the primary SHAP tool in Python. However, my models were built with `caret` in R and would be difficult to translate into a Python-context, or require retraining which I did not have time for, which is why I stuck with R.
+- AÖS: I ended up using the `kernelshap` package (see above for link), which felt sufficient with a clean tutorial on GitHub, and is probably what I'd recommend to R users.
+- AÖS: In practice, I found the kernel SHAP estimation to work well with my Elastic Net models with ~120 features, but it worked poorly for Random Forest. This is fair enough, as other tools may be more appropriate for SHAP estimation with trees (see for instance the paper by [Lundberg, Erion and Chen et al., 2020](https://www.nature.com/articles/s42256-019-0138-9.epdf?shared_access_token=RCYPTVkiECUmc0CccSMgXtRgN0jAjWel9jnR3ZoTv0O81kV8DqPb2VXSseRmof0Pl8YSOZy4FHz5vMc3xsxcX6uT10EzEoWo7B-nZQAHJJvBYhQJTT1LnJmpsa48nlgUWrMkThFrEIvZstjQ7Xdc5g%3D%3D), or the primary SHAP [GitHub page](https://github.com/shap/shap)).
+- AÖS: From my understanding, Kernel SHAP is solid, well-rounded and generally useful, but it may be impossible to use for more complex models, and more recent improvements may be worth investigating.
+
+### Model-specific approximations
+- Gains in speed can be made if we choose an estimation approach that suits our specific models.
+- AÖS: In my experience, these are less frequently used than Kernel SHAP or other mentioned alternatives, so I chose not to ccomment on them more here.
+
+::: {.callout-note}
+
+### What about software?
+- AÖS: I found the `kernelshap` package in R to be sufficient for my own purposes (SHAP for an Elastic Net model, with ~120 features), [GitHub](https://github.com/ModelOriented/kernelshap), [CRAN](https://cran.r-project.org/web/packages/kernelshap/index.html).
+- In R, other implementations include the `fastshap` package ([GitHub](https://bgreenwell.github.io/fastshap/), [CRAN](https://cran.r-project.org/web/packages/fastshap/index.html)), and the `shapper` package ([GitHub](https://github.com/ModelOriented/shapper), [CRAN](https://cloud.r-project.org/web/packages/shapper/index.html)).
+- In Python, the authors of this paper have authored the `shap` package, which seems to be the gold standard and the most commonly used ([GitHub](https://github.com/shap/shap)).
+
+:::
+
