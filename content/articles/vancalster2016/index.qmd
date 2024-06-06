@@ -17,10 +17,10 @@ Objectives
 : Paper by STRATOS initiative-involved researchers, defines a hierarchy of calibration - from weak to strong - and illustrates them with simulations and examples.
 
 Related articles
-: Van Calster, McLernon and Van Smeden et al. (2019) [(PubMed)[https://pubmed.ncbi.nlm.nih.gov/31842878/]] [(kepipedia)[../vancalster2016/index.qmd]]; Kull, Filho and Flach (2017) [(GitHub)[https://betacal.github.io/]].
+: Van Calster, McLernon and Van Smeden et al. (2019) [[PubMed](https://pubmed.ncbi.nlm.nih.gov/31842878/)] [[kepipedia][(../vancalster2016/index.qmd)]; Kull, Filho and Flach (2017) [[GitHub](https://betacal.github.io/)].
 
 Link
-: DOI: [10.1016/j.jclinepi.2015.12.005 ](https://doi-org.proxy.kib.ki.se/10.1016/j.jclinepi.2015.12.005)
+: DOI: [10.1016/j.jclinepi.2015.12.005](https://doi-org.proxy.kib.ki.se/10.1016/j.jclinepi.2015.12.005).
 
 :::
 
@@ -53,21 +53,3 @@ Link
 ## Conclusion
 - While strong calibration is the optimal goal, moderate calibration is the realistic goal which we ought to achieve in our model development.
 - As final recommendations they suggest graphically assessing models for moderate calibration, and providing the summary statistics for weak calibration.
-
-::: {.callout-warning}
-
-### What should go here?
-- Text!
-
-:::
-
-- And what should go here?
-- Anything here?
-
-::: {.callout-note}
-
-### What about here? Is there anything worth putting here?
-- Text!
-
-:::
-
