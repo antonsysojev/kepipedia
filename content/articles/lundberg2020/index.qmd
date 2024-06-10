@@ -1,0 +1,57 @@
+---
+title: Lundberg, Erion and Chen et al., 2020.
+date: 2024-06-10
+author: Anton Öberg Sysojev
+categories:
+    - Prediction
+    - Feature importance
+subtitle: >
+    From local explanations to global understanding with explainable AI for trees
+---
+
+::: {.callout-note}
+
+### At a glance
+
+Summary
+: Describes and proposes TreeExplainer, a fast and exact algorithm for SHAP value estimation in tree-based models.
+
+Related articles
+: Shapley (1951) [(PDF)[https://www.rand.org/content/dam/rand/pubs/research_memoranda/2008/RM670.pdf]], Štrumbelj and Kononenko (2014) [[Knowledge and Information Systems](https://link.springer.com/article/10.1007/s10115-013-0679-x)],  Aas, Jullum and Løland (2021) [(PubMed)[https://pubmed-ncbi-nlm-nih-gov.proxy.kib.ki.se/32982121/]], Lundberg, Nair and Vavilala et al. (2018) [[PubMed](https://pubmed-ncbi-nlm-nih-gov.proxy.kib.ki.se/31001455/)] and Lundberg and Lee (2017), [PDF](https://dl.acm.org/doi/pdf/10.5555/3295222.3295230) [kepipedia](../lundberg2017/index.qmd). For more general texts on 'explainable AI', I recommend Christoph Molnar's book *Interpretable Machine Learning*, which is freely available via GitHub: (Interpretable Machine Learning)[https://christophm.github.io/interpretable-ml-book/], with the chapter on SHAP available here: (SHAP)[https://christophm.github.io/interpretable-ml-book/shap.html].
+
+Link
+: [Nature Machine Intelligence](https://www.nature.com/articles/s42256-019-0138-9.epdf?shared_access_token=RCYPTVkiECUmc0CccSMgXtRgN0jAjWel9jnR3ZoTv0O81kV8DqPb2VXSseRmof0Pl8YSOZy4FHz5vMc3xsxcX6uT10EzEoWo7B-nZQAHJJvBYhQJTT1LnJmpsa48nlgUWrMkThFrEIvZstjQ7Xdc5g%3D%3D)
+
+Anton's note to reader
+: This text does not attempt to cover the mathematics behind TreeExplaner... I probably should have dug into it but it would have taken more time than I felt I had. If you're interested, feel free to update this post on the mathematical aspects of the method.
+
+:::
+
+## Introduction
+- While the authors previously proposed SHAP values for feature importance analysis in general ([Lundberg and Lee, 2017](../lundberg2017/index.qmd)), suggested implementations have limitations within the context of tree-based learners, one of the most popular classes of machine learning methods.
+- In particular, while kernel SHAP estimation algorithms are valid also for tree-based learners, they tend to be slow, require a potentially inappropriate assumption of feature independence, and ignore underlying methodology through their model-agnostic approach.
+
+- The authors thus propose 'TreeExplainer', an approach specialized to tree-based learners that computes local explanations based on exact Shapley values in polynomial time, extend local explanations to additionally capture interactions between features, and provides tools for interpretation of global structure based on local explanations.
+
+## Advantages of tree-based models
+- Whereas deep learning tools are among the most powerful learning models, and linear models remain the most interpretable, tree-based models provide a comfortable middle ground between them.
+- Nevertheless, there are cases when tree-based models are preferable, the authors particularly highlighting tabular datasets in which 'features are individually meaningful and lack strong multiscale temporal or spatial structures', citing XGBoost as a particularly strong implementation.
+- Here, they additionally show a preferance for tree-based models (in particular, gradient boosted trees (XGboost)) in example data, both in terms of AUC, area under the precision-recall curve and R2.
+- They also show, in simulated data, that tree-based models can be more interpretable than standard linear models - in non-linear data - per the bias incurred with the latter (well, this is actually not surprising at all...).
+
+## Local explanations for trees
+- An efficient and exact approach, TreeExplainer beats out most pre-existing methods:
+- it beats out simply following the decision path, an infeasible approach to interpretability for ensemble trees;
+- it beats out what is referred to as 'the Saabas method' (see [github.com/andos/treeinterpreter](https://github.com/andosa/treeinterpreter)) by being impartial in feature credit assingment (i.e. by not upweighting results based on tree depth) and providing results consistent with human intuition around feature importance;
+- and it beats out model-agnostic approaches such as Kernel SHAP by improving dramatically on the computational complexity.
+
+- It also has the added benefit of providing interaction feature importance.
+
+::: {.callout-note}
+
+### What about software?
+
+- AÖS: I have not used TreeExplainer myself, and instead stuck with Kernel SHAP for my model as it was not a tree-based model that gave the best performance in my context. Nevertheless, the most well-established implementation is of course by the authors of the paper, available for Python via their [github page](https://github.com/shap/shap). There are probably wrappers and other implementations available in other languages.
+
+:::
+
